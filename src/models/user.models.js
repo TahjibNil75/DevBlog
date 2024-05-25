@@ -52,9 +52,14 @@ const userSchema = new Schema(
               message: 'Password {VALUE} is not strong enough.',
             },
           },
-          isAdmin: {
+          role: {
+            type: String,
+            enum: ["user", "admin"],
+            default: "user"
+          },
+          isBlocked: {
             type: Boolean,
-            default: false,
+            default: false
           },
           profilePicture: {type: String},
           refreshToken: { type: String}

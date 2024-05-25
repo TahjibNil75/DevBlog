@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
     login, 
     logout, 
+    refreshAccessToken, 
     userSignUp
 } from "../controllers/authController.js";
 import { upload } from "../middlewares/multer_middleware.js";
@@ -19,6 +20,7 @@ router.route("/user-signup").post(
 
 router.route("/login").post(login)
 router.route("/logout").post(authenticationVerifier, logout)
+router.route("/refresh").post(refreshAccessToken)
 
 
 

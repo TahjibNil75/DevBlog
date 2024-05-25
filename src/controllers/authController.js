@@ -35,6 +35,7 @@ const userSignUp = asyncHandler( async(req, res) => {
         lastName,
         password,
         profilePicture: profilePictureUrl || "",
+        
 
     })
     const createdUser = await User.findById(newUser._id).select("-password")
@@ -112,9 +113,51 @@ const logout = asyncHandler(async (req, res) => {
     );
 })
 
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    const inComingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+    if (!inComingRefreshToken){
+        throw new ApiError(401, "Unaunticated Request")
+    }
+    try {
+        const decodeToken = jwt.verify(
+            inComingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        )
+        const user = await User.findById(decodeToken?._id)
+        if (!user) {
+            throw new ApiError(401, "Unaunticated Request or Invalid refresh token")
+        }
+
+        if (inComingRefreshToken !== user?.refreshToken){
+            throw new ApiError(401, "Refresh token is expired or used")
+        }
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+        const {newAccessToken, newRefreshToken} = await generateAccessAndRefreshToken(user._id)
+        return res
+        .status(200)
+        .cookie("accessToken", newAccessToken, options)
+        .cookie("refreshToken", newRefreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {newAccessToken, newRefreshToken},
+                "Access Token Refresh successfully"
+            )
+        )
+        
+    } catch (error) {
+        throw new ApiError(401, error?.message || "Invalid refresh token")
+    }
+})
+
 
 export {
     userSignUp,
     login,
-    logout
+    logout,
+    refreshAccessToken
 }
