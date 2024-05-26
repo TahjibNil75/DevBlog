@@ -20,7 +20,7 @@ const blogSchema = new Schema(
             required: true,
         },
         tags: {
-            type: String,
+            type: [String], // Fixed Bug: To set multiple tags. Updated this line from String to [String] accept an array of strings
             maxLength: [30, "Tag Name is too long"],
             enum: {
                 values: validTags,

@@ -31,7 +31,53 @@ const createBlogPost = asyncHandler(async (req, res) => {
 })
 
 
-const updateBlogPost = asyncHandler(async (req, res) =>{})
+
+const updateBlogPost = asyncHandler(async (req, res) =>{
+
+    const {id} = req.params
+    const blogPost = await Blog.findOne({_id:id})
+    if (!blogPost) {
+        throw new ApiError(404, "Blog post not found");
+    }
+
+    const {title, content, tags } = req.body
+    const updateFeilds = {}
+    if (title){
+        updateFeilds.title = title
+    }
+    if (content){
+        updateFeilds.content = content
+    }
+    if (tags){
+        updateFeilds.tags = tags
+    }
+    // If no fields are provided in the request body, return a response indicating no changes were made
+    if (Object.keys(updateFeilds).length == 0){
+        return res.status(400)
+        .json(
+            400, null, "No fields provided for update"
+        )
+    }
+
+    const updatePost = await Blog.findByIdAndUpdate(id,
+        {
+            $set: updateFeilds,
+        },
+        {
+            new: true // Return the document after update
+        });
+    return res.status(200)
+    .json(
+        new ApiResponse(200, updatePost, "Blog post updated successfully")
+    )
+
+})
+
+
+const getBlogPostByKeywords = asyncHandler(async (req, res) =>{})
+
+
+const getBlogPostBytags = asyncHandler(async(req, res) => {})
 
 
 const deleteBlogPost = asyncHandler(async (req, res) =>{})
@@ -42,5 +88,7 @@ const deleteBlogPost = asyncHandler(async (req, res) =>{})
 export {
     createBlogPost,
     updateBlogPost,
+    getBlogPostByKeywords,
+    getBlogPostBytags,
     deleteBlogPost,
 }

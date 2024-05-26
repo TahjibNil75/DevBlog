@@ -79,10 +79,6 @@ const searchUser = asyncHandler( async (req, res) => {
     if (!user){
         throw new ApiError(404, "User not found")
     }
-
-    // Count the number of blogs
-    
-
     // Construct the response data
     const userData = {
         firstName: user.firstName,
