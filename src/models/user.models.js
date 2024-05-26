@@ -2,6 +2,7 @@ import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import validator from "validator";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 
 const userSchema = new Schema(
@@ -62,10 +63,18 @@ const userSchema = new Schema(
             default: false
           },
           profilePicture: {type: String},
-          refreshToken: { type: String}
+          refreshToken: { type: String},
+          // Fixed bug: (searchUser) -> To allow a user to have multiple blogs associated with them, 
+          //Its need to be define userBlogList as an array of Schema.Types.ObjectId. Then only all the blogs created by user will return
+          userBlogList: [{
+            type: Schema.Types.ObjectId,
+            ref: "Blog"
+          }]
     },
     {timestamps: true}
 )
+
+userSchema.plugin(mongoosePaginate)
 
 // only run if password is updated, otherwise it will change every time we update the user
 userSchema.pre("save", async function (next) {
