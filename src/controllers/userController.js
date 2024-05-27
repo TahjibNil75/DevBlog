@@ -1,10 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { User } from "../models/user.models.js";
-import { uploadToS3 } from "../utils/awsS3.js";
 import { ApiResponse } from "../utils/apiResponse.js";
-import mongoosePaginate from "mongoose-paginate-v2"
-import { populate } from "dotenv";
 
 
 
@@ -38,25 +35,14 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 })
 
 const getAllUsers = asyncHandler( async (req, res) => {
-
-    const page = parseInt(req.query.page) || 1  // Current page number, default to 1
-    const limit = parseInt(req.query.limit) || 10 // Number of users per page, default to 10
-
-    // Find users and populate their blogs
-    const users = await User.paginate({}, {
-        page,
-        limit,
-    })
-
-    if (!users || users.docs.length === 0){
-        throw new ApiError(404, "No users found")
+    try {
+        return res.status(200)
+        .json(
+            new ApiResponse(200, res.paginatedResults, "Users retrieved successfully")
+        )
+    } catch (error) {
+        throw new ApiError(500, "Failed to retrieve users");
     }
-
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(200, users.docs, "All User Lists")
-    )
 })
 
 const searchUser = asyncHandler( async (req, res) => {

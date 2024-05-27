@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import validator from "validator";
 import mongoosePaginate from "mongoose-paginate-v2";
-import { Blog } from "./blogPost.models.js";
 
 
 const userSchema = new Schema(
@@ -53,6 +52,12 @@ const userSchema = new Schema(
                 }),
               message: 'Password {VALUE} is not strong enough.',
             },
+            validator: (pass) => {
+                if (pass.toLowerCase().includes("password")) {
+                    throw new Error("Password cannot contain 'password'!")
+                }
+            },
+            message: "Password cannot contain 'password'!"
           },
           role: {
             type: String,
@@ -65,13 +70,6 @@ const userSchema = new Schema(
           },
           profilePicture: {type: String},
           refreshToken: { type: String},
-
-          
-        //   userAward: {
-        //     type: String,
-        //     enum: ["Bronze", "Silver", "Gold"],
-        //     default: "Bronze"
-        //   },
 
 
           // Fixed bug: (searchUser) -> To allow a user to have multiple blogs associated with them, 

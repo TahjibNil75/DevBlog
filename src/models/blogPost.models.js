@@ -1,4 +1,5 @@
 import mongoose, {Schema} from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const validTags = [
                     "AWS", "GOLANG", "JAVASCRIPT", "Typescript", "nodejs", "reactjs", "GCP", 
@@ -38,7 +39,7 @@ const blogSchema = new Schema(
     }, {timestamps: true}
 )
 
-
+blogSchema.plugin(mongoosePaginate);
 
 
 

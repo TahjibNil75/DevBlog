@@ -73,11 +73,17 @@ const updateBlogPost = asyncHandler(async (req, res) =>{
 
 })
 
+const getAllPosts = asyncHandler(async(req, res) => {
+    try {
+        return res.status(200)
+        .json(
+            new ApiResponse(200, res.paginatedResults, "Posts retrieved successfully")
+        )
+    } catch (error) {
+        throw new ApiError(500, "Failed to retrieve posts");
+    }
+})
 
-const getBlogPostByKeywords = asyncHandler(async (req, res) =>{})
-
-
-const getBlogPostBytags = asyncHandler(async(req, res) => {})
 
 
 const deleteBlogPost = asyncHandler(async (req, res) =>{})
@@ -88,7 +94,6 @@ const deleteBlogPost = asyncHandler(async (req, res) =>{})
 export {
     createBlogPost,
     updateBlogPost,
-    getBlogPostByKeywords,
-    getBlogPostBytags,
     deleteBlogPost,
+    getAllPosts,
 }
