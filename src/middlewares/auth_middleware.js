@@ -6,7 +6,7 @@ import { User } from "../models/user.models.js";
 
 
 // Middleware to verify JWT token
-export const authenticationVerifier = asyncHandler(async (req, _, next) => {
+export const requireSignIn = asyncHandler(async (req, _, next) => {
     try {
         // Retrieve token from cookies or Authorization header
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");

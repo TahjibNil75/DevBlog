@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import validator from "validator";
 import mongoosePaginate from "mongoose-paginate-v2";
+import { Blog } from "./blogPost.models.js";
 
 
 const userSchema = new Schema(
@@ -64,6 +65,15 @@ const userSchema = new Schema(
           },
           profilePicture: {type: String},
           refreshToken: { type: String},
+
+          
+        //   userAward: {
+        //     type: String,
+        //     enum: ["Bronze", "Silver", "Gold"],
+        //     default: "Bronze"
+        //   },
+
+
           // Fixed bug: (searchUser) -> To allow a user to have multiple blogs associated with them, 
           //Its need to be define userBlogList as an array of Schema.Types.ObjectId. Then only all the blogs created by user will return
           userBlogList: [{
@@ -83,6 +93,7 @@ userSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, 10)
     next()
 })
+
 
 userSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password, this.password)

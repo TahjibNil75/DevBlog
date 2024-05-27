@@ -1,6 +1,9 @@
 import mongoose, {Schema} from "mongoose";
 
-const validTags = ["AWS", "GOLANG", "JAVASCRIPT", "Typescript", "nodejs", "reactjs", "GCP", "Kubernetes"];
+const validTags = [
+                    "AWS", "GOLANG", "JAVASCRIPT", "Typescript", "nodejs", "reactjs", "GCP", 
+                    "Kubernetes", "python", "Docker", "Database", "SQL", "NoSQL", "Azure"
+];
 
 const blogSchema = new Schema(
     {
