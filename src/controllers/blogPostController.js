@@ -76,6 +76,45 @@ const updateBlogPost = asyncHandler(async (req, res) =>{
 
 })
 
+const deleteBlogPost = asyncHandler(async (req, res) =>{
+    const {id} = req.params
+    const blogPost = await Blog.findOne({_id:id})
+    if (!blogPost){
+        throw new ApiError(404, "Blog post not found")
+    }
+
+    await Blog.findByIdAndDelete(id)
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $pull: {blogPost: blogPost._id}
+        }, {new: true}
+    )
+    return res.status(204)
+    .json(
+        new ApiResponse(204, {}, "Blog post deleted")
+    )
+})
+
+
+const getSingleBlogPost = asyncHandler(async(req, res) =>{
+    try {
+        const {id} = req.params
+        const blogPost = await Blog.findById({_id:id})
+        if (!blogPost){
+            throw new ApiError(404, "Blog post not found")
+        }
+        return res.status(200)
+        .json(
+            new ApiResponse(200, blogPost, "Post retrieved successfully")
+        )
+    } catch (error) {
+        throw new ApiError(500, "Failed to retrieve post");
+    }
+})
+
+
+
 const getAllPosts = asyncHandler(async(req, res) => {
     try {
         return res.status(200)
@@ -113,9 +152,6 @@ const searchPosts = asyncHandler(async(req, res) =>{
 
 
 
-const deleteBlogPost = asyncHandler(async (req, res) =>{})
-
-
 
 
 export {
@@ -125,6 +161,7 @@ export {
     getAllPosts,
     getBlogPostByTags,
     searchPosts,
+    getSingleBlogPost,
 }
 
 
