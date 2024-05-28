@@ -86,9 +86,6 @@ const searchUser = asyncHandler( async (req, res) => {
 
 
 
-
-
-
 export {
     updateAccountDetails,
     getAllUsers,

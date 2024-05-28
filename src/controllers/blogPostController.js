@@ -12,6 +12,9 @@ const createBlogPost = asyncHandler(async (req, res) => {
     }
 
     const author = req.user._id  // Get the authenticated user's ID from the request
+    if (!author){
+        throw new ApiError(404, "Invalid request")
+    }
     const createBlog = new Blog({
         title,
         content,
@@ -84,6 +87,30 @@ const getAllPosts = asyncHandler(async(req, res) => {
     }
 })
 
+const getBlogPostByTags = asyncHandler(async(req, res) =>{
+    try {
+        return res.status(200)
+        .json(
+            new ApiResponse(200, res.paginatedResults, "Posts retrieved successfully")
+        )
+    } catch (error) {
+        throw new ApiError(500, "Failed to retrieve posts");
+    }
+})
+
+// Combined Api of getALLPosts and getBlogPostByTags
+const searchPosts = asyncHandler(async(req, res) =>{
+    try {
+        return res.status(200)
+        .json(
+            new ApiResponse(200, res.paginatedResults, "Posts retrieved successfully")
+        )
+    } catch (error) {
+        throw new ApiError(500, "Failed to retrieve posts")
+    }
+})
+
+
 
 
 const deleteBlogPost = asyncHandler(async (req, res) =>{})
@@ -96,4 +123,41 @@ export {
     updateBlogPost,
     deleteBlogPost,
     getAllPosts,
+    getBlogPostByTags,
+    searchPosts,
 }
+
+
+
+
+
+
+// const getBlogPostByTags = asyncHandler(async(req, res) =>{
+//     try {
+//         // The ? is a ternary operator, which is a shorthand for an if-else statement. It checks if req.query.tags is truthy (i.e., it exists and is not empty).
+//         // If req.query.tags is truthy (the tags parameter is provided), the code executes req.query.tags.split(',').
+//         // The : is part of the ternary operator's syntax, separating the true case from the false case.
+//         // f req.query.tags is falsy (the tags parameter is not provided or is empty), the code executes []. [] creates an empty array.
+//         /*
+//         Combining it all:
+//         If req.query.tags is provided and not empty, tags will be an array of strings split by commas (e.g., ['AWS', 'GOLANG']).
+//         If req.query.tags is not provided or is empty, tags will be an empty array ([]).
+//         */
+//         const tags = req.query.tags ? req.query.tags.split(',') : [];
+//         if (tags.length === 0) {
+//             throw new ApiError(400, "No tags provided")
+//         }
+//         const posts = await Blog.find(
+//             {
+//                 $tags: {$in: tags}
+//             }
+//         )
+//         return res.status(200)
+//         .json(
+//             new ApiResponse (200, posts, "Posts retrieved successfully")
+//         )
+        
+//     } catch (error) {
+//         throw new ApiError(500, "Failed to retrieve posts")
+//     }
+// })
