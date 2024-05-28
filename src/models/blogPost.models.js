@@ -3,7 +3,8 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const validTags = [
                     "AWS", "GOLANG", "JAVASCRIPT", "Typescript", "nodejs", "reactjs", "GCP", 
-                    "Kubernetes", "python", "Docker", "Database", "SQL", "NoSQL", "Azure"
+                    "Kubernetes", "python", "Docker", "Database", "SQL", "NoSQL", "Azure",
+                    "React"
 ];
 
 const blogSchema = new Schema(
@@ -35,7 +36,11 @@ const blogSchema = new Schema(
             type: String,
             enum: ["published", "archived"],
             default: "published"
-        }
+        },
+        comments: [{
+            type: Schema.Types.ObjectId,
+            ref: "Comment",
+        }]
     }, {timestamps: true}
 )
 

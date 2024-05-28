@@ -87,7 +87,7 @@ const deleteBlogPost = asyncHandler(async (req, res) =>{
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $pull: {blogPost: blogPost._id}
+            $pull: {blogPost: blogPost._id} // Pull (remove) the specified blog post ID from the user's blogPost array
         }, {new: true}
     )
     return res.status(204)
