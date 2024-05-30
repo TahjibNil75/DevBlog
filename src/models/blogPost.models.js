@@ -32,6 +32,10 @@ const blogSchema = new Schema(
                 message: "Please enter a  valid tag name: AWS, GOLANG, JAVASCRIPT, Typescript, nodejs, reactjs, GCP, Kubernetes"
             }
         },
+        likesCount:{
+            type: Number,
+            default: 0
+        },
         status: {
             type: String,
             enum: ["published", "archived"],

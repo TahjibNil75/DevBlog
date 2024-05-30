@@ -56,7 +56,7 @@ const deleteComment = asyncHandler(async (req, res) =>{
     const userId = req.user._id
 
     const deleteComment = await Comment.findByIdAndDelete(
-        {_id: commentId, user: userId}, 
+        {_id: commentId, user: userId}, // Ensure the comment ID matches and the user is the owner
         {new:true}
     )
     if (!deleteComment){
@@ -73,7 +73,6 @@ const deleteComment = asyncHandler(async (req, res) =>{
     .json(
         new ApiResponse(201,null, "Comment Deleted")
     )
-
 })
 
 export {
