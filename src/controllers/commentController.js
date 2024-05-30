@@ -27,12 +27,16 @@ const createComment = asyncHandler(async (req, res) => {
 
 })
 
-
+// Todo: fix bug: only comment owner can update comments
 const updateComment = asyncHandler(async(req, res)=>{
     const {commentId} = req.params
     const {content} = req.body
+    const userId = req.user._id
+
+
     const updateComment = await Comment.findByIdAndUpdate(
-        commentId, {content},
+        {_id: commentId, user: userId}, // Ensure the comment ID matches and the user is the owner
+        {content},
         {new: true}
     )
     if (!updateComment){
@@ -46,12 +50,17 @@ const updateComment = asyncHandler(async(req, res)=>{
 
 })
 
-// TODO: Fix It: Cast to ObjectId failed for value ":6653626d2f246085783b7f58" (type string) at path "_id" for model "Blog"
+// Comment owner can delete this only
 const deleteComment = asyncHandler(async (req, res) =>{
     const {commentId, blogId} = req.params
-    const comment = await Comment.findByIdAndDelete(commentId)
-    if (!comment){
-        throw new ApiError(404, "Comment is not found");
+    const userId = req.user._id
+
+    const deleteComment = await Comment.findByIdAndDelete(
+        {_id: commentId, user: userId}, 
+        {new:true}
+    )
+    if (!deleteComment){
+        throw new ApiError(404, "Comment not found")
     }
     await Blog.findByIdAndUpdate(
         blogId,
@@ -72,42 +81,3 @@ export {
     updateComment,
     deleteComment,
 }
-
-
-
-
-// TODO: Fix this api
-// const createComment = asyncHandler(async(req, res)=> {
-//     const { blogId } = req.params;
-//     const { content } = req.body;
-//     try {
-//         // Combine blog retrieval and comment creation in a single transaction
-//         const [blog, newComment] = await Promise.all([
-//             Blog.findByIdAndUpdate(
-//                 blogId,
-//                 {
-//                     $push:{comments: content},
-//                 }, {new: true},
-//             ),
-//             new Comment({
-//                 content,
-//                 blog: blogId
-//             }).save()
-//         ])
-//         if (!blog) {
-//             throw new ApiError(404, "Blog is not found");
-//           }
-//           return res
-//           .status(201)
-//           .json(
-//             new ApiResponse(201, newComment, "Comment Posted")
-//           );  
-        
-//     } catch (error) {
-//         return res
-//         .status(500)
-//         .json(
-//             new ApiError (500, "Error creating comment")
-//         )
-//     }
-// })
