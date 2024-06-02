@@ -137,6 +137,17 @@ const getBlogPostByTags = asyncHandler(async(req, res) =>{
     }
 })
 
+const getBookMarkedPosts = asyncHandler(async(req, res) => {
+    try {
+        return res.status(200)
+        .json(
+            new ApiResponse(200, res.paginatedResults, "Posts retrieved successfully")
+        )
+    } catch (error) {
+        throw new ApiError(500, "Failed to retrieve posts");
+    }
+})
+
 // Combined Api of getALLPosts and getBlogPostByTags
 const searchPosts = asyncHandler(async(req, res) =>{
     try {
@@ -162,6 +173,7 @@ export {
     getBlogPostByTags,
     searchPosts,
     getSingleBlogPost,
+    getBookMarkedPosts,
 }
 
 

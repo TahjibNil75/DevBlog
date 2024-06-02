@@ -11,6 +11,7 @@ import {
     updateBlogPost 
 } from "../controllers/blogPostController.js";
 import { Blog } from "../models/blogPost.models.js";
+import { BookMark } from "../models/bookmark.models.js";
 
 const router = Router()
 
@@ -21,6 +22,7 @@ router.route("/get-post/:id").get(getSingleBlogPost)
 router.route("/dashboard/all-posts").get(paginate(Blog), getAllPosts)
 router.route("/tags/all-posts").get(paginate(Blog), getBlogPostByTags)
 router.route("/search/all-posts").get(paginate(Blog), searchPosts)
+router.route("/bookmarked-posts").get(requireSignIn, paginate(BookMark), getAllPosts)
 
 
 
