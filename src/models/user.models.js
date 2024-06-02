@@ -54,7 +54,7 @@ const userSchema = new Schema(
             },
             validator: (pass) => {
                 if (pass.toLowerCase().includes("password")) {
-                    throw new Error("Password cannot contain 'password'!")
+                    throw new Error("Password cannot contain 'password!")
                 }
             },
             message: "Password cannot contain 'password'!"
@@ -67,6 +67,14 @@ const userSchema = new Schema(
           isBlocked: {
             type: Boolean,
             default: false
+          },
+          followersCount:{
+            type: Number,
+            default: 0
+          },
+          followingCount: {
+            type: Number,
+            default: 0
           },
           profilePicture: {type: String},
           refreshToken: { type: String},
