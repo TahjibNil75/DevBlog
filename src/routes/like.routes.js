@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { requireSignIn } from "../middlewares/auth_middleware.js";
-import { likeBlog, unlikeBlog } from "../controllers/likeController.js";
+import { likeUnlikeComment, likeUnlikePost } from "../controllers/likeController.js";
 
 
 const router = Router()
 
 
-router.route("/likeblog/:blogId").post(requireSignIn, likeBlog)
-router.route("/unlikeblog/:blogId").post(requireSignIn, unlikeBlog)
+router.route("/post/:postId").post(requireSignIn, likeUnlikePost)
+router.route("/comment/:commentId").post(requireSignIn, likeUnlikeComment)
 
 
 export default router;

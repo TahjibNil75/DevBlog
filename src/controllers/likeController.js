@@ -3,77 +3,91 @@ import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { Like } from "../models/like.models.js";
 import { Blog } from "../models/blogPost.models.js";
+import { Comment } from "../models/comment.models.js";
 
 
-
-const likeBlog = asyncHandler(async (req, res) => {
-    const { blogId } = req.params;
-
-    const blog = await Blog.findById(blogId);
-    if (!blog) {
-        throw new ApiError(404, "Blog not found");
+const likeUnlikePost = asyncHandler(async (req, res) => {
+    const { blogId } = req.params
+    const post = await Blog.findOne(blogId)
+    if (!post) {
+        throw new ApiError(404, "Blog is not found");
     }
-
-    try {
-        // Check if the user has already liked the post
-        const existingLike = await Like.findOne({
+    // See if user has already liked the post
+    const isAlreadyLiked = await Like.findOne({
+        blog: blogId,
+        likedBy: req.user?._id
+    })
+    if (isAlreadyLiked){
+        await Like.findOneAndDelete({
             blog: blogId,
-            likedBy: req.user._id,
-        });
+            likedBy: req.user?._id
+        })
 
-        if (existingLike) {
-            throw new ApiError(400, "You have already liked this post");
-        } else {
-            // Like the post
-            const like = await Like.create({
-                blog: blogId,
-                likedBy: req.user._id,
-            });
+        post.likesCount -= 1
+        await post.save()
 
-            blog.likesCount += 1;
-            await blog.save()
-
-            return res.status(201).json(new ApiResponse(201, like, "Post liked successfully"));
-        }
-    } catch (error) {
-        throw new ApiError(500, "Failed to like post");
-    }
-});
-
-const unlikeBlog = asyncHandler(async(req, res) =>{
-
-    const { blogId } = req.params;
-
-    const blog = await Blog.findById(blogId);
-    if (!blog) {
-        throw new ApiError(404, "Blog not found");
-    }
-    try {
-        const existingLike = await Like.findOne({
+        return res.status(200).json(
+            new ApiResponse(200, null, "unliked")
+        );
+    } else {
+        const like = await Like.create({
             blog: blogId,
-            likedBy: req.user._id,
-        });
-        if (!existingLike) {
-            throw new ApiError(400, "You have not liked the post")
-        } else {
-            blog.likesCount -= 1
-            await blog.save()
-            return res.status(201)
-            .json(new ApiResponse(201, null, "Post unlike successfully"))
-        }
-        
-    } catch (error) {
-        throw new ApiError(500, "Failed to unlike post");
-    }
+            likedBy: req.user?._id
+        })
 
+        post.likesCount += 1;
+        await post.save()
+
+        return res.status(200).json(
+            new ApiResponse(200, like, "liked")
+        );
+    }
+})
+
+const likeUnlikeComment = asyncHandler(async (req, res)=>{
+    const { commentId } = req.params
+    const comment = await Comment.findOne({_id:commentId})
+    if (!comment){
+        throw new ApiError(404, "comment is not found");
+    }
+    const isAlreadyLiked = await Like.findOne({
+        comment: commentId,
+        likedBy: req.user?._id
+    })
+    if (isAlreadyLiked){
+        await Like.findOneAndDelete({
+            comment: commentId,
+            likedBy: req.user?._id
+        })
+        comment.likesCount -= 1
+        await comment.save()
+
+        return res.status(200).json(
+            new ApiResponse(200, null, "unliked")
+        );
+
+    }else {
+        const like = await Like.create({
+            comment: commentId,
+            likedBy: req.user?._id
+        })
+        comment.likesCount += 1
+        await comment.save()
+
+        return res.status(200).json(
+            new ApiResponse(200, like, "liked")
+        );
+    }
 })
 
 
 
 
+
+
 export {
-    likeBlog,
-    unlikeBlog
+    likeUnlikePost,
+    likeUnlikeComment
 }
 
 
