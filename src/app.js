@@ -1,6 +1,9 @@
 import  express  from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import session from "express-session";
+
 
 const app = express()
 
@@ -14,6 +17,19 @@ app.use(express.json({limit:"20kb"}))
 app.use(express.urlencoded({extended: true, limit: "20kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
+
+
+// required for passport
+app.use(
+    session({
+      secret: process.env.EXPRESS_SESSION_SECRET,
+      resave: true,
+      saveUninitialized: true,
+    })
+  ); // session secret
+  app.use(passport.initialize());
+  app.use(passport.session()); // persistent login sessions
+
 
 import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';

@@ -5,6 +5,7 @@ import { uploadToS3 } from "../utils/awsS3.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken"
 import { generateAccessAndRefreshToken } from "../utils/generateToken.js";
+import { UserLoginType } from "../constants.js";
 
 
 const userSignUp = asyncHandler( async(req, res) => {
@@ -61,6 +62,19 @@ const login = asyncHandler ( async (req, res) => {
     if (!user){
         throw new ApiError(404, "User does not exist")
     }
+
+    if (user.loginType !== UserLoginType.EMAIL_PASSWORD) {
+        // If user is registered with some other method, we will ask him/her to use the same method as registered.
+        // This shows that if user is registered with methods other than email password, he/she will not be able to login with password. Which makes password field redundant for the SSO
+        throw new ApiError(
+          400,
+          "You have previously registered using " +
+            user.loginType?.toLowerCase() +
+            ". Please use the " +
+            user.loginType?.toLowerCase() +
+            " login option to access your account."
+        );
+      }    
 
     const isPasswordValid = await user.isPasswordCorrect(password)
     if (!isPasswordValid){
@@ -154,10 +168,32 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 })
 
+const socialLogin = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user?._id)
+    if (!user){
+        throw new ApiError(404, "User does not exist");
+    }
+    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
+    const options = {
+        httpOnly: true, // Ensures the cookie is only accessible via web server, helps mitigate XSS attacks
+        secure: true    // Ensures the cookie is sent over HTTPS only, helps protect data in transit
+    };
+    return res
+    .status(301)
+    .cookie("accessToken", accessToken, options) // set the access token in the cookie
+    .cookie("refreshToken", refreshToken, options) // set the refresh token in the cookie
+    .redirect(
+      // redirect user to the frontend with access and refresh token in case user is not using cookies
+      // `${process.env.CLIENT_SSO_REDIRECT_URL}`
+      `${process.env.CLIENT_SSO_REDIRECT_URL}?accessToken=${accessToken}&refreshToken=${refreshToken}`
+    );
+})
+
 
 export {
     userSignUp,
     login,
     logout,
-    refreshAccessToken
+    refreshAccessToken,
+    socialLogin
 }
