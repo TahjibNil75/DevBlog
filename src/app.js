@@ -1,7 +1,7 @@
 import  express  from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import passport from "passport";
+import passport from "./passport/index.js";
 import session from "express-session";
 
 
@@ -23,8 +23,8 @@ app.use(cookieParser())
 app.use(
     session({
       secret: process.env.EXPRESS_SESSION_SECRET,
-      resave: true,
-      saveUninitialized: true,
+      resave: false,
+      saveUninitialized: false,
     })
   ); // session secret
   app.use(passport.initialize());

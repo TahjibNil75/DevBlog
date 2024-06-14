@@ -37,7 +37,8 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            passReqToCallback: true
         },
         async (_, __, profile, next) => {
             const user = await User.findOne({
@@ -66,10 +67,10 @@ passport.use(
                     password: profile._json.sub, // Set user's password as sub (coming from the google)
                     username: profile._json.email?.split("@")[0], // as email is unique, this username will be unique
                     loginType: UserLoginType.GOOGLE,
-                    profilePicture: {
-                        url: profile._json.picture,
-                        localPath: "",
-                    }
+                    // profilePicture: {
+                    //     url: profile._json.picture,
+                    //     localPath: "",
+                    // }
                 })
                 if (createUser){
                     next(null, createUser)
@@ -82,3 +83,5 @@ passport.use(
         }
     )
 )
+
+export default passport
