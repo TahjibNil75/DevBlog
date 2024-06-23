@@ -59,7 +59,3 @@ const followUnfollowUser = asyncHandler(async (req, res) => {
 
 export {followUnfollowUser}
 
-//TODO:
-// add followinn api's by learning mongodn aggregation pipeline
-// getFollowersListByUserName,
-// getFollowingListByUserName,

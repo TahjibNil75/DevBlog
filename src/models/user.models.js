@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import validator from "validator";
 import mongoosePaginate from "mongoose-paginate-v2";
-import { AvailableSocialLogins, UserLoginType } from "../constants.js";
+import { AvailableSocialLogins, AvailableUserRoles, UserLoginType, UserRolesEnum } from "../constants.js";
 
 
 const userSchema = new Schema(
@@ -62,8 +62,9 @@ const userSchema = new Schema(
           },
           role: {
             type: String,
-            enum: ["user", "admin"],
-            default: "user"
+            enum: AvailableUserRoles,
+            default: UserRolesEnum.USER,
+            required: true
           },
           loginType: {
             type: String,

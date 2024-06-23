@@ -184,9 +184,28 @@ const socialLogin = asyncHandler(async (req, res) => {
     .cookie("refreshToken", refreshToken, options) // set the refresh token in the cookie
     .redirect(
       // redirect user to the frontend with access and refresh token in case user is not using cookies
-      // `${process.env.CLIENT_SSO_REDIRECT_URL}`
-      `${process.env.CLIENT_SSO_REDIRECT_URL}?accessToken=${accessToken}&refreshToken=${refreshToken}`
+    //  `${process.env.CLIENT_SSO_REDIRECT_URL}`  // Frontend url where backend should redirect when user is successfully logged in through the Google/Github SSO
+    //   `${process.env.CLIENT_SSO_REDIRECT_URL}?accessToken=${accessToken}&refreshToken=${refreshToken}`
     );
+})
+
+const assignRole = asyncHandler(async(req, res)=>{
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    const user = await User.findById(userId)
+    if (!user){
+        throw new ApiError(404, "User does not exist")
+    }
+    user.role = role
+    await user.save({
+        validateBeforeSave: false
+    })
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Role Changed for the user"))
+
 })
 
 
@@ -195,5 +214,6 @@ export {
     login,
     logout,
     refreshAccessToken,
-    socialLogin
+    socialLogin,
+    assignRole
 }
